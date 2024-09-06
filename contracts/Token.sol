@@ -66,6 +66,30 @@ contract Token is ERC20, Ownable {
     }
 
 
+    function enter(uint256 _usdtAmount) external {
+        TickAccount storage tickAccount = tickAccounts[msg.sender];
+        require(tickAccount.enter == 0, "Already entered");
+        require(_usdtAmount > 0, "Invalid usdt amount");
+
+        IERC20(USDT).safeTransferFrom(msg.sender, address(this), _usdtAmount);
+
+        uint256 curTick = getCurrentTickIndex();
+
+        tickAccount.enter = curTick + 1;
+        tickAccount.deposit = _usdtAmount;
+
+        _totalDeposit += _usdtAmount;
+        _totalUsers += 1;
+
+        for (uint i = curTick + 1; i <= _ticks; i++) {
+            TickState storage tickState = tickStates[i];
+            tickState.deposit += _usdtAmount;
+            tickState.users += 1;
+        }
+
+        emit Entered(msg.sender, _usdtAmount, curTick + 1);
+    }
+
     function exit() external {
         TickAccount storage tickAccount = tickAccounts[msg.sender];
         require(block.timestamp <= _endDate, "Sale finished");
