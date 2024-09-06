@@ -190,7 +190,9 @@ contract Token is ERC20, Ownable {
         return userAmount;
     }
 
-
+    function getTokenPerTick() public view returns (uint256) {
+        return (_totalSupply * (10000 - _lpPercent)) / 10000 / _ticks;
+    }
 
 
 }
