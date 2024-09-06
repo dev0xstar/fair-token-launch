@@ -65,6 +65,11 @@ contract Token is ERC20, Ownable {
         _mint(address(this), _totalSupply);
     }
 
+    function setTicks(uint256 ticks) external onlyOwner {
+        require(block.timestamp < _startDate, "Sale started");
+
+        _ticks = ticks;
+    }
 
     function enter(uint256 _usdtAmount) external {
         TickAccount storage tickAccount = tickAccounts[msg.sender];
