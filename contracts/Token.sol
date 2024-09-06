@@ -165,7 +165,30 @@ contract Token is ERC20, Ownable {
         );
     }
 
+    function getCurrentTokenForUser(
+        address user
+    ) public view returns (uint256) {
+        TickAccount memory tickAccount = tickAccounts[user];
 
+        if (tickAccount.enter == 0 || tickAccount.exit > 0) {
+            return 0;
+        }
+
+        uint256 curTick = getCurrentTickIndex();
+
+        uint256 amountPerTick = getTokenPerTick();
+
+        uint256 userAmount = 0;
+
+        for (uint i = tickAccount.enter; i <= curTick; i++) {
+            uint256 userAmountInTick = (amountPerTick * tickAccount.deposit) /
+                tickStates[i].deposit;
+
+            userAmount += userAmountInTick;
+        }
+
+        return userAmount;
+    }
 
 
 
