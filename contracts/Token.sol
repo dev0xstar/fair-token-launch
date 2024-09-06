@@ -165,45 +165,9 @@ contract Token is ERC20, Ownable {
         );
     }
 
-    function getCurrentTokenForUser(
-        address user
-    ) public view returns (uint256) {
-        TickAccount memory tickAccount = tickAccounts[user];
 
-        if (tickAccount.enter == 0 || tickAccount.exit > 0) {
-            return 0;
-        }
 
-        uint256 curTick = getCurrentTickIndex();
 
-        uint256 amountPerTick = getTokenPerTick();
 
-        uint256 userAmount = 0;
 
-        for (uint i = tickAccount.enter; i <= curTick; i++) {
-            uint256 userAmountInTick = (amountPerTick * tickAccount.deposit) /
-                tickStates[i].deposit;
-
-            userAmount += userAmountInTick;
-        }
-
-        return userAmount;
-    }
-
-    function getTokenPerTick() public view returns (uint256) {
-        return (_totalSupply * (10000 - _lpPercent)) / 10000 / _ticks;
-    }
-
-    function getCurrentTickIndex() public view returns (uint256) {
-        uint256 curTime = block.timestamp;
-        if (curTime < _startDate) {
-            return 0;
-        } else if (curTime >= _endDate) {
-            return _ticks;
-        } else {
-            uint256 duration = curTime - _startDate;
-            uint256 totalDuration = _endDate - _startDate;
-            return (_ticks * duration) / totalDuration;
-        }
-    }
 }
