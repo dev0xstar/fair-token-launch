@@ -194,5 +194,16 @@ contract Token is ERC20, Ownable {
         return (_totalSupply * (10000 - _lpPercent)) / 10000 / _ticks;
     }
 
-
+    function getCurrentTickIndex() public view returns (uint256) {
+        uint256 curTime = block.timestamp;
+        if (curTime < _startDate) {
+            return 0;
+        } else if (curTime >= _endDate) {
+            return _ticks;
+        } else {
+            uint256 duration = curTime - _startDate;
+            uint256 totalDuration = _endDate - _startDate;
+            return (_ticks * duration) / totalDuration;
+        }
+    }
 }
